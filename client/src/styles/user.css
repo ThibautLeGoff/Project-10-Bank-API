@@ -1,0 +1,65 @@
+/* Styles for User page */
+.user-container {
+	max-width: 400px;
+	margin: 1rem auto;
+	background: #fff;
+	padding: 1.5rem;
+	border-radius: 6px;
+}
+
+.user-row {
+	margin-bottom: 1rem;
+}
+
+.user-row label {
+	display: block;
+	font-weight: bold;
+	margin-bottom: 6px;
+}
+
+.user-row input {
+	width: 100%;
+	padding: 8px;
+	box-sizing: border-box;
+}
+
+.user-actions {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.user-edit-button {
+	margin-top: 0.5rem;
+}
+
+/* Account cards */
+.accounts {
+	margin-top: 1.5rem;
+	display: grid;
+	gap: 1rem;
+}
+
+.account-card {
+	background: #fff;
+	padding: 1rem;
+	border-radius: 6px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.account-card-header h3 {
+	margin: 0 0 0.5rem 0;
+	font-size: 1.1rem;
+}
+
+.account-balance {
+	font-size: 1.6rem;
+	font-weight: bold;
+	margin: 0;
+}
+
+.account-desc {
+	margin: 0 0 0.75rem 0;
+	color: #666;
+}
+
+
