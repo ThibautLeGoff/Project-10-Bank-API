@@ -6,6 +6,17 @@ import User from './pages/User'
 import Header from './components/Header'
 import Footer from './components/Footer'
 
+/**
+ * Composant principal de l'application
+ * 
+ * Structure :
+ * - Header : Navigation principale
+ * - Routes : Gestion des différentes pages
+ *   - / : Page d'accueil
+ *   - /sign-in : Page de connexion
+ *   - /user/:userId : Page du profil utilisateur (authentification requise)
+ * - Footer : Pied de page
+ */
 function App() {
   return (
     <BrowserRouter>
@@ -13,11 +24,10 @@ function App() {
         <Header />
         <div className="app-layout">
           <main className="app-main">
-            {/* Routage client : pages principales de l'application */}
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/sign-in" element={<SignIn />} />
-              {/* La page User récupère le profil via l'API (token requis) */}
+              {/* Route protégée : nécessite un token JWT valide */}
               <Route path="/user/:userId" element={<User />} />
             </Routes>
           </main>
