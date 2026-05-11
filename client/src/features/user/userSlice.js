@@ -1,20 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import api from '../../api/axios'
 
-/**
- * Slice utilisateur Redux
- * Gère le profil utilisateur (récupération et mise à jour)
- * Centralise toute la logique liée aux données utilisateur
- */
-
-/**
- * Thunk asynchrone : Récupération du profil utilisateur
- * Nécessite un token JWT valide (géré automatiquement par axios)
- */
+// Thunk asynchrone : récupère le profil utilisateur depuis le backend
 export const fetchUserProfile = createAsyncThunk(
   'user/fetchProfile',
   async (_, { rejectWithValue }) => {
     try {
+      // Appel API pour récupérer les données du profil
       const res = await api.post('/api/v1/user/profile')
       if (!res.data?.body) {
         return rejectWithValue('Réponse invalide du serveur')
@@ -26,14 +18,12 @@ export const fetchUserProfile = createAsyncThunk(
   }
 )
 
-/**
- * Thunk asynchrone : Mise à jour du profil utilisateur
- * @param {Object} payload - Les données à mettre à jour (firstName, lastName)
- */
+// Thunk asynchrone : met à jour le profil utilisateur (prénom et nom)
 export const updateUserProfile = createAsyncThunk(
   'user/updateProfile',
   async ({ firstName, lastName }, { rejectWithValue }) => {
     try {
+      // Appel API PUT pour mettre à jour le profil
       const res = await api.put('/api/v1/user/profile', { firstName, lastName })
       if (!res.data?.body) {
         return rejectWithValue('Échec de la sauvegarde')
@@ -45,30 +35,37 @@ export const updateUserProfile = createAsyncThunk(
   }
 )
 
-/**
- * État initial du profil utilisateur
- */
+// État initial : profil vide et pas en cours de chargement
 const initialState = {
   profile: null,
   loading: false,
   error: null,
   updateLoading: false,
   updateError: null,
+  rememberedEmail: null,
 }
 
+// Crée le slice Redux 'user'
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    /**
-     * Réinitialise le profil utilisateur (lors de la déconnexion)
-     */
+    // Action : efface le profil (utilisée lors de la déconnexion)
     clearUserProfile(state) {
       state.profile = null
       state.error = null
       state.updateError = null
     },
+    // Action : mémorise l'email de l'utilisateur (Remember Me)
+    setRememberedEmail(state, action) {
+      state.rememberedEmail = action.payload
+    },
+    // Action : efface l'email mémorisé
+    clearRememberedEmail(state) {
+      state.rememberedEmail = null
+    },
   },
+  // Gère les états des thunks asynchrones
   extraReducers: (builder) => {
     builder
       // === Récupération du profil ===
@@ -101,5 +98,7 @@ const userSlice = createSlice({
   },
 })
 
-export const { clearUserProfile } = userSlice.actions
+// Export les actions
+export const { clearUserProfile, setRememberedEmail, clearRememberedEmail } = userSlice.actions
+// Export le reducer
 export default userSlice.reducer

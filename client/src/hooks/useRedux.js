@@ -4,20 +4,17 @@ import { useNavigate } from 'react-router-dom'
 import { logout } from '../features/auth/authSlice'
 import { fetchUserProfile } from '../features/user/userSlice'
 
-/**
- * Hook personnalisé : Gestion de l'authentification
- * Retourne les informations d'authentification et une fonction de déconnexion
- * 
- * @returns {Object} { token, userId, isAuthenticated, loading, error, logout }
- */
+// Hook : récupère l'état d'authentification et la fonction de déconnexion
 export function useAuth() {
   const dispatch = useDispatch()
   const auth = useSelector((s) => s.auth)
   
+  // Fonction pour se déconnecter
   const handleLogout = () => {
     dispatch(logout())
   }
   
+  // Retourne les données d'authentification
   return {
     token: auth.token,
     userId: auth.userId,
@@ -28,20 +25,17 @@ export function useAuth() {
   }
 }
 
-/**
- * Hook personnalisé : Profil utilisateur
- * Retourne le profil utilisateur et les fonctions de gestion
- * 
- * @returns {Object} { profile, loading, error, updateLoading, updateError, refresh }
- */
+// Hook : récupère le profil utilisateur et permet de le rafraîchir
 export function useUserProfile() {
   const dispatch = useDispatch()
   const user = useSelector((s) => s.user)
   
+  // Fonction pour rafraîchir les données du profil
   const refresh = () => {
     dispatch(fetchUserProfile())
   }
   
+  // Retourne les données du profil
   return {
     profile: user.profile,
     loading: user.loading,
@@ -52,34 +46,31 @@ export function useUserProfile() {
   }
 }
 
-/**
- * Hook personnalisé : Protection de route
- * Redirige vers /sign-in si l'utilisateur n'est pas authentifié
- * Charge automatiquement le profil utilisateur si disponible
- * 
- * @param {Object} options - Options de configuration
- * @param {boolean} options.loadProfile - Charger le profil automatiquement (défaut: true)
- * @returns {Object} { token, profile, loading, isAuthenticated }
- */
+// Hook : protège une page en vérifiant l'authentification et charge le profil automatiquement
 export function useProtectedRoute(options = { loadProfile: true }) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   
+  // Récupère les données nécessaires du store
   const token = useSelector((s) => s.auth.token)
   const profile = useSelector((s) => s.user.profile)
   const loading = useSelector((s) => s.user.loading)
   
+  // Effet : vérifie l'authentification et charge le profil si nécessaire
   useEffect(() => {
+    // Si pas de token, redirige vers la connexion
     if (!token) {
       navigate('/sign-in')
       return
     }
     
+    // Si demandé et que le profil n'est pas chargé, le récupère
     if (options.loadProfile && !profile) {
       dispatch(fetchUserProfile())
     }
   }, [token, profile, navigate, dispatch, options.loadProfile])
   
+  // Retourne les données de la route protégée
   return {
     token,
     profile,
@@ -88,15 +79,11 @@ export function useProtectedRoute(options = { loadProfile: true }) {
   }
 }
 
-/**
- * Hook personnalisé : Préférences utilisateur
- * Retourne l'email mémorisé
- * 
- * @returns {Object} { rememberedEmail }
- */
+// Hook : récupère les préférences utilisateur (email mémorisé, etc)
 export function usePreferences() {
   const prefs = useSelector((s) => s.prefs)
   
+  // Retourne les préférences
   return {
     rememberedEmail: prefs.rememberedEmail,
   }

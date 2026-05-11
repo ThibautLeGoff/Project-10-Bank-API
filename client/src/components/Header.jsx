@@ -3,29 +3,17 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth, useUserProfile } from '../hooks/useRedux'
 import '../styles/header.css'
 
-/**
- * Header global de l'application
- * 
- * Fonctionnalités :
- * - Affiche "Connexion" si l'utilisateur n'est pas authentifié
- * - Affiche le prénom et "Déconnexion" si authentifié
- * - Utilise des hooks personnalisés pour simplifier l'accès à Redux
- */
 export default function Header() {
   const navigate = useNavigate()
   const { isAuthenticated, logout } = useAuth()
   const { profile, refresh } = useUserProfile()
 
-  // Récupérer le profil utilisateur si connecté et non chargé
   React.useEffect(() => {
     if (isAuthenticated && !profile) {
       refresh()
     }
   }, [isAuthenticated, profile, refresh])
 
-  /**
-   * Gère la déconnexion
-   */
   const handleLogout = () => {
     logout()
     navigate('/')

@@ -3,28 +3,21 @@ import api from '../../api/axios'
 import jwtDecode from 'jwt-decode'
 import { setToken as setAuthToken } from '../../api/authToken'
 
-/**
- * Slice d'authentification Redux
- * Gère l'état du token JWT, l'ID utilisateur et les états de chargement/erreur
- * Le token est stocké à la fois dans Redux (state) et en mémoire (authToken)
- */
-
-/**
- * Thunk asynchrone : Connexion utilisateur
- * Envoie les identifiants au backend et récupère le token JWT
- */
+// Thunk asynchrone : envoie email/password au backend et récupère le JWT token
 export const login = createAsyncThunk(
   'auth/login',
   async ({ email, password }, { rejectWithValue }) => {
     try {
+      // Appel API pour se connecter
       const res = await api.post('/api/v1/user/login', { email, password })
       const token = res.data?.body?.token
       
+      // Vérifie que le token est reçu
       if (!token) {
         return rejectWithValue('Token manquant dans la réponse du serveur')
       }
 
-      // Décodage optionnel du token pour extraire l'ID utilisateur
+      // Décode le JWT pour extraire l'ID utilisateur
       let userId = null
       try {
         const decoded = jwtDecode(token)
@@ -33,7 +26,7 @@ export const login = createAsyncThunk(
         console.warn('Impossible de décoder le token JWT', e)
       }
 
-      // Stockage du token en mémoire pour les requêtes axios
+      // Sauvegarde le token en mémoire pour les futures requêtes
       setAuthToken(token)
       
       return { token, userId }
@@ -43,9 +36,7 @@ export const login = createAsyncThunk(
   }
 )
 
-/**
- * État initial de l'authentification
- */
+// État initial : utilisateur pas connecté
 const initialState = {
   token: null,
   userId: null,
@@ -53,14 +44,12 @@ const initialState = {
   error: null,
 }
 
+// Crée le slice Redux 'auth'
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    /**
-     * Action : Déconnexion
-     * Supprime le token du store Redux et de la mémoire
-     */
+    // Action de déconnexion : vide l'état et le token
     logout(state) {
       state.token = null
       state.userId = null
@@ -69,6 +58,7 @@ const authSlice = createSlice({
       setAuthToken(null)
     },
   },
+  // Gère les différents états du thunk 'login'
   extraReducers: (builder) => {
     builder
       // Connexion en cours
@@ -90,5 +80,7 @@ const authSlice = createSlice({
   },
 })
 
+// Export l'action logout
 export const { logout } = authSlice.actions
+// Export le reducer
 export default authSlice.reducer

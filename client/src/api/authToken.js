@@ -1,20 +1,12 @@
-// Gestionnaire simple du token JWT en mémoire
-// Cela évite d'importer le store Redux dans le module axios
-// et empêche l'utilisation du localStorage pour le stockage du token
+// Stockage du JWT token en mémoire
 let token = null
 
-/**
- * Définit le token JWT en mémoire
- * @param {string|null} t - Le token JWT
- */
+// Sauvegarde le token JWT en mémoire (appelé après une connexion réussie)
 export function setToken(t) {
   token = t
 }
 
-/**
- * Récupère le token JWT depuis la mémoire
- * @returns {string|null} Le token JWT ou null
- */
+// Récupère le token JWT stocké en mémoire (utilisé par axios pour les requêtes)
 export function getToken() {
   return token
 }

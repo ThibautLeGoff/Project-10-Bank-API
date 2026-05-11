@@ -2,29 +2,18 @@ import React from 'react'
 import { useDispatch as useReduxDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { login } from '../features/auth/authSlice'
-import { setRememberedEmail, clearRememberedEmail } from '../features/prefs/prefsSlice'
+import { setRememberedEmail, clearRememberedEmail } from '../features/user/userSlice'
 
-/**
- * Page de connexion (Sign In)
- * 
- * Fonctionnalités :
- * - Formulaire d'authentification avec email et mot de passe
- * - Option "Se souvenir de moi" pour mémoriser l'email
- * - Utilise la thunk Redux 'login' pour l'authentification
- * - Redirige vers la page utilisateur après connexion réussie
- * - Affiche les erreurs de connexion
- */
 export default function SignIn() {
   const dispatch = useReduxDispatch()
   const auth = useSelector((s) => s.auth)
-  const rememberedEmail = useSelector((s) => s.prefs?.rememberedEmail)
+  const rememberedEmail = useSelector((s) => s.user?.rememberedEmail)
   const navigate = useNavigate()
 
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [remember, setRemember] = React.useState(false)
 
-  // Pré-remplissage de l'email si mémorisé
   React.useEffect(() => {
     if (rememberedEmail) {
       setEmail(rememberedEmail)
@@ -32,9 +21,6 @@ export default function SignIn() {
     }
   }, [rememberedEmail])
 
-  /**
-   * Gère la soumission du formulaire de connexion
-   */
   const handleSubmit = (e) => {
     e.preventDefault()
     
@@ -42,8 +28,6 @@ export default function SignIn() {
       if (action.payload) {
         const userId = action.payload.userId || 1
         
-        // Gestion de la fonctionnalité "Se souvenir de moi"
-        // Seul l'email est mémorisé, jamais le mot de passe
         try {
           if (remember) {
             dispatch(setRememberedEmail(email))
@@ -54,7 +38,6 @@ export default function SignIn() {
           console.warn('Erreur lors de la sauvegarde des préférences', e)
         }
         
-        // Redirection vers la page utilisateur
         navigate(`/user/${userId}`)
       }
     })
