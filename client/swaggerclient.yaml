@@ -1,0 +1,329 @@
+swagger: '2.0'
+info:
+  title: Bank Argent Client API - Transactions
+  description: Contains all available API endpoints for client transactions management
+  version: '1.0.0'
+  termsOfService: 'http://swagger.io/terms/'
+host: localhost:3001
+basePath: /api/v1
+schemes:
+  - http
+paths:
+  /transactions:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Get All Transactions for Current Month
+      description: API for fetching all user transactions for the current month, grouped by account
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: query
+          name: month
+          type: integer
+          description: Month number (1-12). If not provided, defaults to current month
+          required: false
+        - in: query
+          name: year
+          type: integer
+          description: Year in format YYYY. If not provided, defaults to current year
+          required: false
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transactions retrieved successfully and grouped by account
+          schema:
+            $ref: '#/definitions/TransactionsResponse'
+        '400':
+          description: Invalid Fields
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '500':
+          description: Internal Server Error
+  /transactions/{transactionId}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Get Transaction Details
+      description: API for fetching detailed information about a specific transaction
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: path
+          name: transactionId
+          type: string
+          description: Transaction ID
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transaction details retrieved successfully
+          schema:
+            $ref: '#/definitions/TransactionDetailsResponse'
+        '400':
+          description: Invalid Fields
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '404':
+          description: Transaction not found
+        '500':
+          description: Internal Server Error
+    put:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Update Transaction Information
+      description: API for updating transaction details such as category or notes
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: path
+          name: transactionId
+          type: string
+          description: Transaction ID
+          required: true
+        - in: body
+          name: body
+          description: Transaction update payload
+          required: true
+          schema:
+            $ref: '#/definitions/TransactionUpdate'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transaction updated successfully
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid Fields
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '404':
+          description: Transaction not found
+        '500':
+          description: Internal Server Error
+    delete:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Delete Transaction
+      description: API for deleting a transaction
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: path
+          name: transactionId
+          type: string
+          description: Transaction ID
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transaction deleted successfully
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '404':
+          description: Transaction not found
+        '500':
+          description: Internal Server Error
+  /transactions/add:
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions Module
+      summary: Create New Transaction
+      description: API for adding a new transaction to an account
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: body
+          name: body
+          description: New transaction payload
+          required: true
+          schema:
+            $ref: '#/definitions/TransactionCreate'
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Transaction created successfully
+          schema:
+            $ref: '#/definitions/TransactionCreateResponse'
+        '400':
+          description: Invalid Fields
+        '401':
+          description: Unauthorized - Invalid or missing token
+        '500':
+          description: Internal Server Error
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+definitions:
+  Transaction:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Unique transaction identifier
+      date:
+        type: string
+        format: date
+        description: Transaction date (YYYY-MM-DD)
+      amount:
+        type: number
+        format: double
+        description: Transaction amount
+      description:
+        type: string
+        description: Transaction description
+      category:
+        type: string
+        description: Transaction category
+      notes:
+        type: string
+        description: Additional notes about the transaction
+      type:
+        type: string
+        enum:
+          - debit
+          - credit
+        description: Type of transaction
+  Account:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Unique account identifier
+      accountNumber:
+        type: string
+        description: Account number
+      accountType:
+        type: string
+        description: Type of account (Checking, Savings, etc.)
+      balance:
+        type: number
+        format: double
+        description: Current account balance
+      transactions:
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
+        description: List of transactions for this account
+  TransactionsResponse:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string
+      body:
+        type: array
+        items:
+          $ref: '#/definitions/Account'
+        description: List of accounts with their transactions for the current month
+  TransactionDetailsResponse:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string
+      body:
+        $ref: '#/definitions/Transaction'
+  TransactionUpdate:
+    type: object
+    properties:
+      category:
+        type: string
+        description: Updated transaction category
+      notes:
+        type: string
+        description: Updated transaction notes
+  TransactionCreate:
+    type: object
+    properties:
+      accountId:
+        type: string
+        description: Account ID to add transaction to
+      date:
+        type: string
+        format: date
+        description: Transaction date (YYYY-MM-DD)
+      amount:
+        type: number
+        format: double
+        description: Transaction amount
+      description:
+        type: string
+        description: Transaction description
+      category:
+        type: string
+        description: Transaction category
+      type:
+        type: string
+        enum:
+          - debit
+          - credit
+        description: Type of transaction
+      notes:
+        type: string
+        description: Additional notes about the transaction
+  TransactionCreateResponse:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string
+      body:
+        type: object
+        properties:
+          id:
+            type: string
+            description: ID of the newly created transaction
+          date:
+            type: string
+            format: date
+          amount:
+            type: number
+            format: double
+          description:
+            type: string
+          category:
+            type: string
+          type:
+            type: string
+  ApiResponse:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string
+      body:
+        type: object

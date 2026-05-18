@@ -47,12 +47,35 @@
   overflow: hidden;
 }
 
-.transactions-list h2 {
-  margin: 0;
+.transactions-list-header {
   padding: 1.5rem;
   background: #f5f5f5;
   border-bottom: 1px solid #e0e0e0;
+}
+
+.transactions-list-header h2 {
+  margin: 0;
   font-size: 1.3rem;
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.transactions-table thead th {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #5b6573;
+  background: #fafafa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.transaction-toggle-column {
+  width: 3rem;
 }
 
 .no-transactions {
@@ -61,81 +84,96 @@
   color: #999;
 }
 
-/* Transaction Item Styles */
-.transaction-item {
+.transaction-row {
   border-bottom: 1px solid #e0e0e0;
 }
 
-.transaction-item:last-child {
-  border-bottom: none;
-}
-
-.transaction-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  user-select: none;
-}
-
-.transaction-header:hover {
+.transaction-row:hover {
   background-color: #f9f9f9;
 }
 
-.transaction-summary {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  flex: 1;
+.transaction-row td {
+  padding: 1rem 1.25rem;
+  vertical-align: middle;
+}
+
+.transaction-toggle-cell {
+  width: 3rem;
+  padding-right: 0;
+}
+
+.transaction-toggle {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d7dfe8;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff 0%, #f2f6fb 100%);
+  cursor: pointer;
+  color: #49627a;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.transaction-toggle:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #e9f0f8 100%);
+  box-shadow: 0 2px 4px rgba(16, 24, 40, 0.1);
 }
 
 .transaction-description {
   font-weight: 500;
   color: #2c3e50;
-  font-size: 1rem;
 }
 
 .transaction-date {
-  color: #999;
-  font-size: 0.85rem;
+  color: #6f7a86;
+  white-space: nowrap;
 }
 
 .transaction-amount {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .amount-debit {
   color: #e74c3c;
-  font-weight: bold;
-  font-size: 1.1rem;
 }
 
 .amount-credit {
   color: #27ae60;
-  font-weight: bold;
-  font-size: 1.1rem;
 }
 
-.transaction-arrow {
+.transaction-balance {
+  white-space: nowrap;
+  color: #2c3e50;
+}
+
+.transaction-chevron {
   display: inline-block;
-  transition: transform 0.3s ease;
-  color: #999;
-  font-size: 0.8rem;
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translateY(-1px);
+  transition: transform 0.25s ease, color 0.2s ease;
+  color: #49627a;
 }
 
-.transaction-arrow.expanded {
-  transform: rotate(180deg);
+.transaction-chevron.expanded {
+  transform: rotate(-135deg) translateY(1px);
 }
 
 /* Transaction Detail Styles */
+.transaction-detail-row td {
+  padding: 0;
+  background: #f9f9f9;
+}
+
 .transaction-detail {
-  padding: 1rem 1.5rem;
-  background-color: #f9f9f9;
+  padding: 1rem 1.25rem 1.25rem 4rem;
   border-top: 1px solid #e0e0e0;
   animation: slideDown 0.3s ease;
 }
@@ -185,19 +223,50 @@
     font-size: 1.5rem;
   }
 
-  .transaction-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+  .transactions-table thead {
+    display: none;
   }
 
-  .transaction-summary {
+  .transactions-table,
+  .transactions-table tbody,
+  .transactions-table tr,
+  .transactions-table td {
+    display: block;
     width: 100%;
   }
 
-  .transaction-amount {
-    width: 100%;
-    justify-content: space-between;
+  .transaction-row {
+    padding: 0.5rem 0;
+  }
+
+  .transaction-row td {
+    padding: 0.4rem 1rem;
+  }
+
+  .transaction-toggle-cell {
+    width: auto;
+    padding-top: 0.8rem;
+    padding-bottom: 0;
+  }
+
+  .transaction-toggle {
+    margin-left: 0.25rem;
+  }
+
+  .transaction-date,
+  .transaction-description,
+  .transaction-amount,
+  .transaction-balance {
+    padding-left: 1rem;
+  }
+
+  .transaction-amount,
+  .transaction-balance {
+    text-align: left;
+  }
+
+  .transaction-detail {
+    padding: 0.25rem 1rem 1rem 1rem;
   }
 
   .detail-row {

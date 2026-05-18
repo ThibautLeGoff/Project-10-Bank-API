@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import TransactionItem from '../components/TransactionItem'
+import { useProtectedRoute } from '../hooks/useRedux'
 import '../styles/transactions.css'
 
 // Données mockées des transactions
@@ -89,11 +90,16 @@ const accountNames = {
 export default function Transactions() {
   const { accountId } = useParams()
   const navigate = useNavigate()
+  const { isAuthenticated } = useProtectedRoute({ loadProfile: false })
   const transactions = mockTransactions[accountId] || []
   const accountName = accountNames[accountId] || 'Compte inconnu'
 
   // Calcul du solde actuel (dernière transaction)
   const currentBalance = transactions.length > 0 ? transactions[0].balance : 0
+
+  if (!isAuthenticated) {
+    return null
+  }
 
   return (
     <main className="main">
@@ -109,13 +115,28 @@ export default function Transactions() {
         <div className="transactions-list">
           {transactions.length > 0 ? (
             <>
-              <h2>Détail des transactions</h2>
-              {transactions.map((transaction) => (
-                <TransactionItem 
-                  key={transaction.id} 
-                  transaction={transaction}
-                />
-              ))}
+              <div className="transactions-list-header">
+                <h2>Détail des transactions</h2>
+              </div>
+              <table className="transactions-table">
+                <thead>
+                  <tr>
+                    <th className="transaction-toggle-column" aria-label="Détail" />
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Montant</th>
+                    <th>Solde</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactions.map((transaction) => (
+                    <TransactionItem
+                      key={transaction.id}
+                      transaction={transaction}
+                    />
+                  ))}
+                </tbody>
+              </table>
             </>
           ) : (
             <p className="no-transactions">Aucune transaction disponible pour ce compte.</p>
